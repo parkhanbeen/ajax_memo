@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.mlec.repository.mapper.MemoMapper">
+
+<resultMap id="memoMap" type="memo">
+		<result column="memo_no" property="memoNo" />
+		<result column="memo_content" property="memoContent" />
+		<result column="memo_x" property="memoX" />
+		<result column="memo_y" property="memoY" />
+		<result column="memo_color" property="memoColor" />
+		<result column="fold_whe" property="foldWhe" />
+		<result column="pix_whe" property="pixWhe" />
+	</resultMap>
+	
+	<select id="selectMemo" resultMap="memoMap">
+	  select * from memo
+	
+	</select>
+	
+	<insert id="insertMemo" parameterType="memo">
+	   INSERT INTO memo 
+	   (memo_no, memo_x, memo_y, 
+	   memo_color, fold_whe,pix_whe)
+        VALUES(
+        sq_memo_no.NEXTVAL, #{memoX},#{memoY}, 
+        #{memoColor}, #{foldWhe}, #{pixWhe})
+	</insert>
+	
+	
+	<update id="updateMemo" parameterType="memo">
+	   update memo
+	   set memo_x = #{memoX},
+	       memo_y = #{memoY},
+	       memo_content = #{memoContent},
+	       fold_whe = #{foldWhe},
+	       pix_whe = #{pixWhe}
+	   where memo_no = #{memoNo}
+	</update>
+	
+	<delete id="deletememo" parameterType="int">
+	  delete from memo
+	  where memo_no = #{memoNo}
+	</delete>
+
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

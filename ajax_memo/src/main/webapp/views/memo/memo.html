@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="../../resources/js/jquery-ui.min.js"></script>
+    <style>
+       body{
+           background-color: rgb(200, 212, 240);
+       }
+       #btnmenu{
+           /* border: 1px solid black; */
+           float: right;
+       }
+       #btnmenu button{
+           /* border: 1px solid black; */
+           width: 70px;
+           background-color: rgb(159, 233, 159);
+       }
+       .memo{
+           /* border: 1px solid black; */
+           width: 150px;
+           height: 15px;
+           /* overflow: hidden; */
+           float: left;
+           /* box-shadow: 2px 2px  5px; */
+           position:absolute;
+           
+       }
+       .memotitle{
+           background-color: rgb(209, 209, 104);
+           /* border: 1px solid black; */
+           box-shadow: 2px 2px  5px;
+           height: 20px;
+       }
+       textarea{
+           background-color: rgb(252, 252, 183);
+           border: none;
+           width: 146px;
+           height: 126px;
+           resize: none;
+           box-shadow: 2px 2px  5px;
+           
+       }
+       .memotitle button{
+           float: right;
+             background:no-repeat;
+             border: none;
+       }
+       #color{
+           height: 18px;
+       }
+       #addmemo{
+           height: 22px;
+       }
+        #result{
+           /* border: 1px solid black; */
+           margin-right: 200px;
+           float: left;
+           width: 146px;
+           height: 146px;
+       } 
+    </style>
+</head>
+<body>
+    <div id="result"></div>
+    <div id="btnmenu">
+    <input type="color" id="color" value="#F3F781">    
+    <button id="addmemo"><i class="fas fa-edit"> </i>메모 추가</button>
+    </div>
+
+    <script>
+    let btn = 0;
+    
+    $(function(){
+    	$.ajax({
+			url: "/ajax_memo/memo/memoList.json",
+			dataType : "json",
+			cache : false,
+   		   success : function(data){
+   			   var result ="";
+   			   console.log(data.length);
+   			   console.log(data[data.length-1].memoNo);
+   			   btn = data[data.length-1].memoNo;
+   			   if(data.length !=0){
+   				   
+   			   for(var memo of data){
+   				var btnupdown = "<i class='fas fa-angle-up'></i>"
+   				console.log(memo.foldWhe);
+   				/* if(memo.foldWhe==1){
+   					var dis = "display: none;";
+   					 
+   				} */
+   				if(memo.pixWhe==1)var pixwhe = "position: fixed;";   				 
+   				   result += "<div class='memo' id='memo"+memo.memoNo+"' data-cnt="+memo.memoNo+" style= 'left:"+memo.memoX+"px; top:"+memo.memoY+"px; "+pixwhe+"' >"+
+                             "<div class='memotitle'><button class='trash' id='trash"+memo.memoNo+"' data-cnt="+memo.memoNo+"><i class='far fa-trash-alt'></i></button><button class='fix' id='fix"+memo.memoNo+"' data-cnt="+memo.memoNo+"><i class='fas fa-crutch'></i></button><button id='updown"+memo.memoNo+"' class='updown' data-cnt="+memo.memoNo+"><i class='fas fa-angle-up'></i></button></div>" + 
+                             "<div class='memobody' id='memobody"+memo.memoNo+"'>" +
+                             "<textarea  id='text"+memo.memoNo+"'  style='background-color : "+memo.memoColor+";'>";
+                             if(memo.memoContent == undefined)result += "";
+                             else result += memo.memoContent;
+                             result += "</textarea></div></div>";
+                           
+   			   }
+   			    $("#result").html(result);
+   			   }
+   			  $(".memo").draggable({
+  	            cursor: "move",
+  	            stack: ".memo",
+  	            opacity: 0.8
+  	        });
+   			 for(var memo of data){
+   				 if(memo.pixWhe==1){
+   					 $("#memo" + memo.memoNo).draggable({disabled:true});
+   				 }else{
+   					$("#memo" + memo.memoNo).draggable({disabled:false});
+   				 }
+   				 if(memo.foldWhe==1){
+   					 $("#text" + memo.memoNo).slideUp('fast');
+   					$("#updown"+ memo.memoNo).html("<i class='fas fa-angle-down'></i>");
+   				 }
+   			 }
+   			
+   			  
+   		   }
+   	     });  
+    	
+    });
+   
+     
+     let flag = true;
+     let flag1 = true;
+     
+    $("#addmemo").click(function(){
+    	var x =  $("#result").offset().left;
+    	var y =  $("#result").offset().top;
+    	console.log(btn);
+    	
+        btn++;
+        var color= $("#color").val();
+        console.log(color);
+        var memo = "<div class='memo' id='memo"+btn+"' data-cnt="+btn+">"+
+                   "<div class='memotitle'><button class='trash' id='trash"+btn+"' data-cnt="+btn+"><i class='far fa-trash-alt'></i></button><button class='fix' id='fix"+btn+"' data-cnt="+btn+"><i class='fas fa-crutch'></i></button><button id='updown"+btn+"' class='updown' data-cnt="+btn+"><i class='fas fa-angle-up'></i></button></div>" + 
+                   "<div class='memobody' id='memobody"+btn+"'><textarea id='text"+btn+"'  style='background-color : "+color+"'></textarea></div>" +
+                  "</div>"
+        $("#result").append(memo)
+        $(".memo:last").draggable({
+            cursor: "move",
+            stack: ".memo",
+            opacity: 0.8
+        }); 
+                  
+        var alldata = {"memoX" : x,"memoY" : y,"memoColor":color,"pixWhe":0,"foldWhe":0};
+        console.log(alldata);
+        $.ajax({
+        	type: "post",
+			url: "/ajax_memo/memo/memoWrite.json",
+		    data : alldata, 
+			dataType : "json",
+			cache : false,
+   		   success : function(result){
+   			   /* $("#result").html(result); */
+   			   console.log("eheheh");
+   		   }
+   	     });       
+        });
+    
+       
+    
+        $(document).on("click",".updown",function(){
+        	
+           var i = $(this).data("cnt");
+         $("#text" + $(this).data("cnt")).slideToggle("fast",function(){
+             flag =  $(this).is(':visible');
+             console.log("toggle:",flag);
+             if(flag){
+                 $("#updown"+ i).html("<i class='fas fa-angle-up'></i>");  
+                 
+               }else{
+                    // $("#text" + $(this).data("cnt")).css('display','none');
+                    $("#updown"+ i).html("<i class='fas fa-angle-down'></i>");  
+            }
+            });
+             
+         });
+         $(document).on("click",".fix",function(){
+            // alert($(this).data("cnt"));
+            var disabled = $("#memo" + $(this).data("cnt")).draggable("option","disabled");
+            console.log(disabled);
+           if( disabled){
+                 $("#memo" + $(this).data("cnt")).draggable({disabled:false});
+                }else{
+            $("#memo" + $(this).data("cnt")).draggable({disabled:true});
+                }
+           });
+           $(document).on("click",".trash",function(){
+                 $("#memo" + $(this).data("cnt")).remove();
+                 $.ajax({
+                  	type: "post",
+          			url: "/ajax_memo/memo/delete.json",
+          		    data : {"memoNo": $(this).data("cnt")}, 
+          			dataType : "json",
+          			cache : false,
+             		   success : function(result){
+             			   console.log("삭제완료!");
+             		   }
+             	     }); 
+           });
+           
+           $(document).on("mouseup",".memo",function(){
+               console.log($(this).data("cnt"));
+               /* alert("hihi");  */
+           	var updatex = $("#memo"+$(this).data("cnt")).offset().left;
+           	var updatey = $("#memo"+$(this).data("cnt")).offset().top;
+           	var content = $("#text"+$(this).data("cnt")).val();
+               
+               var fix =0;
+               
+              var fold = 0;
+               /* console.log(fold); */
+               console.log($("#text"+$(this).data("cnt")).is(":hidden"));
+               var disabled = $("#memo" + $(this).data("cnt")).draggable("option","disabled");
+                if(disabled){
+               	 fix = 1;
+                }else{
+               	 fix = 0;
+                }
+                if($("#text"+$(this).data("cnt")).is(":hidden")){
+                	fold = 1;
+                }else{
+                	fold = 0;
+                }
+                
+           	console.log(content);
+           	console.log("fold11",fold);
+               var updatedata =  {"memoNo": $(this).data("cnt"), "memoX" : updatex,"memoY" : updatey, "memoContent":content,"foldWhe":fold, "pixWhe": fix};
+           	 $.ajax({
+                	type: "post",
+        			url: "/ajax_memo/memo/memoUpdate.json",
+        		    data : updatedata, 
+        			dataType : "json",
+        			cache : false,
+           		   success : function(result){
+           			   /* $("#result").html(result); */
+           			   console.log("eheheh");
+           		   }
+           	     }); 
+           	
+           });
+                      
+
+      
+
+    
+    
+    </script>
+</body>
+</html>
